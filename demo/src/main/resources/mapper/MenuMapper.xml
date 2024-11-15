@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.rbac.demo.mapper.MenuMapper">
+    <resultMap id="MenuResultMap" type="com.rbac.demo.model.Menu">
+        <id property="menuId" column="menu_id"/>
+        <result property="menuName" column="menu_name"/>
+        <result property="parentId" column="parent_id"/>
+        <result property="permissionId" column="permission_id"/>
+        <result property="url" column="url"/>
+        <result property="order" column="order"/>
+    </resultMap>
+
+    <select id="getMenusByUserId" resultMap="MenuResultMap">
+    SELECT DISTINCT m.*
+    FROM menus m
+    LEFT JOIN menu_permissions mp ON m.menu_id = mp.menu_id
+    LEFT JOIN permissions p ON mp.permission_id = p.permission_id
+    LEFT JOIN role_permissions rp ON p.permission_id = rp.permission_id
+    LEFT JOIN user_roles ur ON rp.role_id = ur.role_id
+    WHERE ur.user_id = #{userId} OR mp.permission_id IS NULL
+    ORDER BY m.order
+    </select>
+
+</mapper>
